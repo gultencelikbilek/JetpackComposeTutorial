@@ -2,23 +2,30 @@ package com.example.jetpackcomposetutorial.jetpackcomposetutorial
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Face
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
@@ -26,6 +33,7 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -94,7 +102,44 @@ fun ScaffoldTutorial() {
     }
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text(text = "Top bar") })
+            TopAppBar(title = {
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center){
+                    Text(text = "Top App Bar")
+                }
+            },
+                modifier = Modifier.padding(10.dp).clip(RoundedCornerShape(20.dp)),
+                navigationIcon = {
+                    IconButton(onClick = { }) {
+                        Icon(
+                            imageVector = Icons.Default.Menu,
+                            contentDescription = "Menu Icon"
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(onClick = { }) {
+                        BadgedBox(badge = {
+                            Badge (modifier = Modifier.size(10.dp)){
+
+                            }
+                        }) {
+                            Icon(
+                                imageVector = Icons.Outlined.FavoriteBorder,
+                                contentDescription = "Fav Icon"
+                            )
+                        }
+                    }
+                    IconButton(onClick = { }) {
+                        Icon(
+                            imageVector = Icons.Outlined.ShoppingCart,
+                            contentDescription = "ShoppingCart Icon"
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.smallTopAppBarColors(
+                    containerColor = Color(0xFFE0A9A5)
+                )
+            )
         },
         bottomBar = {
             NavigationBar(
@@ -132,11 +177,15 @@ fun ScaffoldTutorial() {
                 }
             }
         },
-       //floatingActionButton = {
-       //    FloatingActionButton(onClick = { }) {
-       //        Icon(imageVector = Icons.Filled.Add, contentDescription = "")
-       //    }
-       //}
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { },
+                shape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp, bottomStart = 30.dp),
+                containerColor = Color(0xFFFFEB3B)
+            ) {
+                Icon(imageVector = Icons.Default.Add, contentDescription = "add")
+            }
+        }
     ) {  paddingValues ->
         Column(
             modifier = Modifier
