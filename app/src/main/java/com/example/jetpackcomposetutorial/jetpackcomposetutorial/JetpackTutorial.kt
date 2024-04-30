@@ -1,5 +1,6 @@
 package com.example.jetpackcomposetutorial.jetpackcomposetutorial
 
+import android.annotation.SuppressLint
 import android.inputmethodservice.Keyboard.Row
 import android.util.Log
 import android.widget.Toast
@@ -25,7 +26,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -34,26 +39,39 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Send
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DismissDirection
+import androidx.compose.material3.DismissValue
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.SwipeToDismiss
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberDismissState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.*
@@ -64,6 +82,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -90,10 +109,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.jetpackcomposetutorial.R
+import kotlin.random.Random
 
 @Composable
 fun JetpackTutorial() {
-
+    LazyColumnSwipeToDeleteTutorial()
 }
 
 @Preview
@@ -126,20 +146,156 @@ fun PreviewExample() {
         "Swift",
         "Verilog"
     )
-    LazyRowAndColumnTutorial(languages)
+    // LazyRowAndColumnTutorial(languages)
 
+    // LazyColumnSwipeToDeleteTutorial()
+    // LazyVerticalGridTutorial()
+
+
+}
+
+
+
+@Composable
+fun LazyVerticalGridTutorial(modifier: Modifier = Modifier) {
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2), //kaç sütının olacağını bildiririz
+        //columns = GridCells.Adaptive(100.dp) //burda cardın boyutunu belrileyip bir sıraya kaç sütun girebilirse onu ayarlaması
+        contentPadding = PaddingValues(16.dp)
+    ) {
+        items(200) {
+            MyCard(
+                it, modifier
+            )
+        }
+
+    }
+}
+
+@Composable
+fun MyCard(it: Int, modifier: Modifier) {
+    Card(
+        modifier
+            .size(100.dp)
+            .padding(6.dp),
+        elevation = CardDefaults.cardElevation(10.dp),
+        colors= CardDefaults.cardColors(
+            containerColor = Color(
+                Random.nextFloat(),
+                Random.nextFloat(),
+                Random.nextFloat(),
+                1f
+            )
+
+            )
+    ) {
+        Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+            Text(text = it.toString(), fontSize = 22.sp)
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun LazyColumnSwipeToDeleteTutorial() {
+    val list = remember {
+        mutableListOf(
+            "Subscribe",
+            "Like",
+            "Share",
+            "Comment",
+            "MkrDeveloper"
+        )
+    }
+    LazyColumn(
+        state = rememberLazyListState(), //listenin durumunu tutar örğn.kaydırma durumda liste görünümü
+        contentPadding = PaddingValues(10.dp), //İçeriğin kenar boşluklarını belirler.
+        modifier = Modifier.fillMaxSize()
+    ) {
+        itemsIndexed(
+            items = list,
+            key = { _, listItem -> //key, her bir öğenin benzersiz bir kimliği olmasını sağlar hashCode() ile bunu sağlar
+                listItem.hashCode()
+            }) { index, item ->
+            val state = rememberDismissState( //kaydırmayı tanımlamak ve izlemek için kullanılır
+                confirmValueChange = {// değişiklik onaylandığında ne yapılacağını belirtmek için kullanılır.
+                    if (it == DismissValue.DismissedToStart) {
+                        list.remove(item)
+                    }
+                    true
+                }
+            )
+            SwipeToDismiss( // Öğerleri yana kaydırarak kaldırmayı sağlar.
+                state = state,
+                background = {
+                    val color = when (state.dismissDirection) {
+                        DismissDirection.StartToEnd -> Color.Green
+                        DismissDirection.EndToStart -> Color.Red
+                        null -> Color.Transparent
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(color)
+                            .padding(horizontal = 20.dp, vertical = 6.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Delete",
+                            modifier = Modifier.align(
+                                Alignment.CenterEnd
+                            )
+                        )
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = "Edit",
+                            modifier = Modifier.align(
+                                Alignment.CenterStart
+                            )
+                        )
+                    }
+                },
+                dismissContent = {//Öğe kaydırıldığında gösterilecek öğenin içeriğini belirtir.
+                    ItemUI(list = list, itemIndex = index)
+                })
+
+
+        }
+    }
+}
+
+@Composable
+fun ItemUI(modifier: Modifier = Modifier, list: MutableList<String>, itemIndex: Int) {
+    Card(
+        modifier.padding(horizontal = 20.dp, vertical = 6.dp)
+    ) {
+        Box(
+            modifier
+                .fillMaxSize()
+                .padding(10.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = list[itemIndex],
+                fontSize = 32.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
+    }
 }
 
 @Composable
 fun LazyRowAndColumnTutorial(languages: List<String>) {
     Column(modifier = Modifier.fillMaxSize()) {
         LazyRow(contentPadding = PaddingValues(10.dp)) {
-            items(languages){
+            items(languages) {
                 RowItem(name = it)
             }
         }
-        LazyColumn(contentPadding = PaddingValues(10.dp)){
-            items(languages){
+
+        LazyColumn(contentPadding = PaddingValues(10.dp)) {
+            items(languages) {
                 ColumnItem(name = it)
             }
         }
@@ -159,9 +315,10 @@ fun ColumnItem(name: String) {
         ),
         elevation = CardDefaults.cardElevation(10.dp)
     ) {
-        Box(modifier = Modifier
-            .padding(10.dp)
-            .fillMaxSize(),
+        Box(
+            modifier = Modifier
+                .padding(10.dp)
+                .fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
             Text(text = name, fontSize = 22.sp, fontWeight = FontWeight.Bold)
@@ -182,9 +339,10 @@ fun RowItem(name: String) {
         ),
         elevation = CardDefaults.cardElevation(10.dp)
     ) {
-        Box(modifier = Modifier
-            .padding(10.dp)
-            .fillMaxSize(),
+        Box(
+            modifier = Modifier
+                .padding(10.dp)
+                .fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
             Text(text = name, fontSize = 22.sp, fontWeight = FontWeight.Bold)
