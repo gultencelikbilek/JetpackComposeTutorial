@@ -11,9 +11,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.jetpackcomposetutorial.jetpackcomposetutorial.JetpackTutorial
+import com.example.jetpackcomposetutorial.jetpackcomposetutorial.TabScreen
+import com.example.jetpackcomposetutorial.jetpackcomposetutorial.nested.ChildDataClass
+import com.example.jetpackcomposetutorial.jetpackcomposetutorial.nested.Nested
+import com.example.jetpackcomposetutorial.jetpackcomposetutorial.nested.ParentDataClass
 import com.example.jetpackcomposetutorial.ui.theme.JetpackComposeTutorialTheme
 
 class MainActivity : ComponentActivity() {
+   private val parentItemList = ArrayList<ParentDataClass>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -23,25 +28,39 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    JetpackTutorial()
+                    //   JetpackTutorial()
+                    //setData()
+                   // Nested(parentItemList)
+                    TabScreen()
                 }
             }
         }
     }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    JetpackComposeTutorialTheme {
-        Greeting("Android")
+    fun setData() {
+        val images = listOf(
+            ChildDataClass(R.drawable.book1),
+            ChildDataClass(R.drawable.book2),
+            ChildDataClass(R.drawable.book3),
+            ChildDataClass(R.drawable.book4),
+            ChildDataClass(R.drawable.book5),
+            ChildDataClass(R.drawable.book6),
+            ChildDataClass(R.drawable.book7),
+            ChildDataClass(R.drawable.book8),
+            ChildDataClass(R.drawable.book9),
+            ChildDataClass(R.drawable.book10),
+            ChildDataClass(R.drawable.book11),
+            ChildDataClass(R.drawable.book12),
+            ChildDataClass(R.drawable.book13),
+            ChildDataClass(R.drawable.book14),
+        )
+        parentItemList.add(ParentDataClass("Novel:",images))
+        parentItemList.add(ParentDataClass("Best Seller:",images.shuffled()))
+        parentItemList.add(ParentDataClass("History:",images.reversed()))
+        parentItemList.add(ParentDataClass("Favorite:",images.shuffled()))
+        parentItemList.add(ParentDataClass("Crime:",images))
+        parentItemList.add(ParentDataClass("Drama:",images.shuffled()))
+        parentItemList.add(ParentDataClass("New Topics:",images.shuffled()))
     }
+
 }
+
