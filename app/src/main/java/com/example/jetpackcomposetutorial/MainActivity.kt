@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.jetpackcomposetutorial.jetpackcomposetutorial.JetpackTutorial
+import com.example.jetpackcomposetutorial.jetpackcomposetutorial.ScaffoldPreview
 import com.example.jetpackcomposetutorial.jetpackcomposetutorial.TabScreen
 import com.example.jetpackcomposetutorial.jetpackcomposetutorial.nested.ChildDataClass
 import com.example.jetpackcomposetutorial.jetpackcomposetutorial.nested.Nested
@@ -31,7 +32,7 @@ class MainActivity : ComponentActivity() {
                     //   JetpackTutorial()
                     //setData()
                    // Nested(parentItemList)
-                    TabScreen()
+                    ScaffoldPreview()
                 }
             }
         }

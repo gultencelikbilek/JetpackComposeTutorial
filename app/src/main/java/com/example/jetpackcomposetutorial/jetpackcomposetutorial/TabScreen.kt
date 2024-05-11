@@ -30,6 +30,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
@@ -39,9 +40,7 @@ fun TabScreen(modifier: Modifier = Modifier) {
     val pagerState = rememberPagerState(pageCount = { HomeTabs.entries.size })
     val selectedTabIndex = remember { derivedStateOf { pagerState.currentPage } }
 
-    Scaffold(topBar = {
-        TopAppBar(title = { Text(text = "Home") })
-    }) {
+    Scaffold() {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -49,7 +48,7 @@ fun TabScreen(modifier: Modifier = Modifier) {
         ) {
             TabRow(
                 selectedTabIndex = selectedTabIndex.value,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth().padding(start = 80.dp,end = 80.dp)
             ) {
                 HomeTabs.entries.forEachIndexed { index, currentTab ->
                     Tab(
@@ -101,8 +100,5 @@ enum class HomeTabs(
         unselectedIcon = Icons.Outlined.FavoriteBorder,
         selectedIcon = Icons.Filled.Favorite,
         text = "Favourite"
-    ),
-    Profile(
-        unselectedIcon = Icons.Outlined.Person, selectedIcon = Icons.Filled.Person, text = "Profile"
     )
 }
