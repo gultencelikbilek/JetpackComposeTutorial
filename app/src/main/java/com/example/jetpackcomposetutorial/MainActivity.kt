@@ -3,6 +3,9 @@ package com.example.jetpackcomposetutorial
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -10,16 +13,25 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.jetpackcomposetutorial.jetpackcomposetutorial.JetpackTutorial
 import com.example.jetpackcomposetutorial.jetpackcomposetutorial.ScaffoldPreview
 import com.example.jetpackcomposetutorial.jetpackcomposetutorial.TabScreen
 import com.example.jetpackcomposetutorial.jetpackcomposetutorial.nested.ChildDataClass
 import com.example.jetpackcomposetutorial.jetpackcomposetutorial.nested.Nested
 import com.example.jetpackcomposetutorial.jetpackcomposetutorial.nested.ParentDataClass
+import com.example.jetpackcomposetutorial.jetpackcomposetutorial.nested.nestedsharedtranstions.DetailsScreen
+import com.example.jetpackcomposetutorial.jetpackcomposetutorial.nested.nestedsharedtranstions.ListScreen
 import com.example.jetpackcomposetutorial.ui.theme.JetpackComposeTutorialTheme
 
 class MainActivity : ComponentActivity() {
-   private val parentItemList = ArrayList<ParentDataClass>()
+    private val parentItemList = ArrayList<ParentDataClass>()
+
+    @OptIn(ExperimentalSharedTransitionApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -29,14 +41,42 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    //   JetpackTutorial()
-                    //setData()
-                   // Nested(parentItemList)
-                    ScaffoldPreview()
+                    val navController = rememberNavController()
+                    SharedTransitionLayout {
+
+                        NavHost(navController = navController, startDestination = "list") {
+                            composable("list") {
+                                ListScreen(
+                                    animatedVisibilityScope = this,
+                                    onItemClick = { resId, text ->
+                                        navController.navigate("detail/$resId/$text")
+                                    }
+                                )
+                            }
+                            composable(
+                                route = "detail/{resId}/{text}",
+                                arguments = listOf(navArgument("resId") {
+                                    type = NavType.IntType
+                                },
+                                    navArgument("text") {
+                                        type = NavType.StringType
+                                    }
+                                )
+                            ) { navBackEntry ->
+
+                                DetailsScreen(
+                                    animatedVisibilityScope = this,
+                                    resId = navBackEntry.arguments!!.getInt("resId") ?: 0,
+                                    text = navBackEntry.arguments!!.getString("text") ?: ""
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
     }
+
     fun setData() {
         val images = listOf(
             ChildDataClass(R.drawable.book1),
@@ -54,13 +94,13 @@ class MainActivity : ComponentActivity() {
             ChildDataClass(R.drawable.book13),
             ChildDataClass(R.drawable.book14),
         )
-        parentItemList.add(ParentDataClass("Novel:",images))
-        parentItemList.add(ParentDataClass("Best Seller:",images.shuffled()))
-        parentItemList.add(ParentDataClass("History:",images.reversed()))
-        parentItemList.add(ParentDataClass("Favorite:",images.shuffled()))
-        parentItemList.add(ParentDataClass("Crime:",images))
-        parentItemList.add(ParentDataClass("Drama:",images.shuffled()))
-        parentItemList.add(ParentDataClass("New Topics:",images.shuffled()))
+        parentItemList.add(ParentDataClass("Novel:", images))
+        parentItemList.add(ParentDataClass("Best Seller:", images.shuffled()))
+        parentItemList.add(ParentDataClass("History:", images.reversed()))
+        parentItemList.add(ParentDataClass("Favorite:", images.shuffled()))
+        parentItemList.add(ParentDataClass("Crime:", images))
+        parentItemList.add(ParentDataClass("Drama:", images.shuffled()))
+        parentItemList.add(ParentDataClass("New Topics:", images.shuffled()))
     }
 
 }
